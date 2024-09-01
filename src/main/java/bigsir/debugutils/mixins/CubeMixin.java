@@ -1,5 +1,6 @@
-package turniplabs.examplemod.mixins;
+package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.interfaces.IPolygon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Polygon;
 import net.minecraft.client.render.Vertex;
@@ -12,7 +13,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import turniplabs.examplemod.interfaces.IPolygon;
 
 @Mixin(value = Cube.class, remap = false)
 public abstract class CubeMixin {

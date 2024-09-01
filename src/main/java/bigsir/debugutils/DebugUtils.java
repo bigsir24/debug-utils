@@ -1,4 +1,4 @@
-package turniplabs.examplemod;
+package bigsir.debugutils;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
@@ -14,18 +14,17 @@ import net.minecraft.core.item.Item;
 import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import turniplabs.halplibe.helper.BlockBuilder;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 
-public class ExampleMod implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint {
+public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint {
     public static final String MOD_ID = "debugutils";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     @Override
     public void onInitialize() {
-        LOGGER.info("ExampleMod initialized.");
+        LOGGER.info("Debug Utils initialized.");
     }
 
 	public static OptionsPage optionsPage;

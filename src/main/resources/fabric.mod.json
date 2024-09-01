@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "debugutils",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Debug Utils",
+  "description": "Debug tools for mod developers.",
   "authors": [
-    "Turnip Labs"
+    "Big Sir"
   ],
   "contact": {
-    "homepage": "",
+    "homepage": "https://github.com/bigsir24/debug-utils",
     "sources": ""
   },
 
@@ -19,20 +19,20 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
+			"bigsir.debugutils.DebugUtils"
     ],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bigsir.debugutils.DebugUtils"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bigsir.debugutils.DebugUtils"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"bigsir.debugutils.DebugUtils"
 		]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+      "debugutils.mixins.json"
   ],
 
   "depends": {
