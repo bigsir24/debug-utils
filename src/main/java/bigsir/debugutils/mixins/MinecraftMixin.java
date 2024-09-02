@@ -1,17 +1,22 @@
 package bigsir.debugutils.mixins;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.InputDevice;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import bigsir.debugutils.DebugUtils;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Minecraft.class, remap = false)
-public class MinecraftMixin {
+public abstract class MinecraftMixin {
 
-	@Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;next()Z", shift = At.Shift.AFTER))
-	public void keyPressCheck(CallbackInfo ci){
-		if(DebugUtils.showDebugCubes != null && DebugUtils.debugCubes.isPressed()) DebugUtils.showDebugCubes.toggle();
+	@Inject(method = "checkBoundInputs", at = @At(value = "HEAD"), cancellable = true)
+	public void keyBindingCheck(InputDevice currentInputDevice, CallbackInfoReturnable<Boolean> cir){
+		if(DebugUtils.debugCubes.isPressEvent(currentInputDevice)) {
+			DebugUtils.showDebugCubes.toggle();
+			cir.setReturnValue(true);
+		}
 	}
 }
