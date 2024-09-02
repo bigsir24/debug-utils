@@ -1,0 +1,9 @@
+debugutils.options=Debug Utils
+debugutils.category.keybinds=Keybinds
+debugutils.debugcubes=Debug Cubes
+debugutils.category.visuals=Visuals
+options.debugCubeLineWidth=Cube Line Width
+options.cornerPointSize=Corner Point Size
+options.rotationPointSize=Rotation Point Size
+options.debugCubeLineOpacity=Cube Line Opacity
+options.disableShadows=Disable Shadows

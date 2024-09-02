@@ -2,14 +2,12 @@ package bigsir.debugutils;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.components.KeyBindingComponent;
-import net.minecraft.client.gui.options.components.OptionsCategory;
+import net.minecraft.client.gui.options.components.*;
 import net.minecraft.client.gui.options.data.OptionsPage;
+import net.minecraft.client.gui.options.data.OptionsPageRegistry;
 import net.minecraft.client.gui.options.data.OptionsPages;
 import net.minecraft.client.input.InputDevice;
-import net.minecraft.client.option.BooleanOption;
-import net.minecraft.client.option.GameSettings;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.*;
 import net.minecraft.core.item.Item;
 import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
@@ -19,7 +17,7 @@ import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 
-public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint {
+public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
     public static final String MOD_ID = "debugutils";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     @Override
@@ -29,7 +27,12 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 
 	public static OptionsPage optionsPage;
 	public static BooleanOption showDebugCubes;
-	public static final KeyBinding debugCubes = new KeyBinding(MOD_ID + ".debugcubes").setDefault(InputDevice.keyboard, Keyboard.KEY_L);
+	public static RangeOption lineWidth;
+	public static RangeOption cornerPointSize;
+	public static RangeOption rotationPointSize;
+	public static RangeOption lineOpacity;
+	public static BooleanOption disableShadows;
+	public static KeyBinding debugCubes;
 
 	@Override
 	public void beforeGameStart() {
@@ -37,7 +40,19 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 
 	@Override
 	public void afterGameStart() {
+		optionsPage = new OptionsPage(MOD_ID+".options", Item.wandMonsterSpawner.getDefaultStack());
+		OptionsPages.register(optionsPage);
 
+		optionsPage
+			.withComponent(
+				new OptionsCategory(MOD_ID + ".category.keybinds").withComponent(new KeyBindingComponent(debugCubes)))
+			.withComponent(
+				new OptionsCategory(MOD_ID + ".category.visuals")
+					.withComponent(new ToggleableOptionComponent<>(lineWidth))
+					.withComponent(new ToggleableOptionComponent<>(cornerPointSize))
+					.withComponent(new ToggleableOptionComponent<>(rotationPointSize))
+					.withComponent(new ToggleableOptionComponent<>(lineOpacity))
+					.withComponent(new BooleanOptionComponent(disableShadows)));
 	}
 
 	@Override
@@ -50,20 +65,13 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 
 	}
 
-	@Override
-	public void beforeClientStart() {
-
-	}
-
-	@Override
-	public void afterClientStart() {
-		GameSettings settings = Minecraft.getMinecraft(Minecraft.class).gameSettings;
+	public static void optionsInit(GameSettings settings){
+		debugCubes = new KeyBinding(MOD_ID + ".debugcubes").setDefault(InputDevice.keyboard, Keyboard.KEY_L);
 		showDebugCubes = new BooleanOption(settings, "showDebugCubes", false);
-		optionsPage = new OptionsPage(MOD_ID+".options", Item.wandMonsterSpawner.getDefaultStack());
-		OptionsPages.register(optionsPage);
-
-		optionsPage.withComponent(
-			new OptionsCategory(MOD_ID + ".category").withComponent(new KeyBindingComponent(debugCubes))
-		);
+		lineWidth = new RangeOption(settings, "debugCubeLineWidth", 4, 10);
+		cornerPointSize = new RangeOption(settings, "cornerPointSize", 9, 20);
+		rotationPointSize = new RangeOption(settings, "rotationPointSize", 9, 20);
+		lineOpacity = new RangeOption(settings, "debugCubeLineOpacity", 50, 101);
+		disableShadows  = new BooleanOption(settings, "disableShadows", false);
 	}
 }
