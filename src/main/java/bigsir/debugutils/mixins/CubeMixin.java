@@ -1,5 +1,6 @@
 package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.DebugUtils;
 import bigsir.debugutils.interfaces.IPolygon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Polygon;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import javax.swing.*;
 
 @Mixin(value = Cube.class, remap = false)
 public abstract class CubeMixin {
@@ -32,16 +35,16 @@ public abstract class CubeMixin {
 
 	@Inject(method = "render", at = @At("HEAD"))
 	public void recompile(float scale, CallbackInfo ci){
-		boolean showBox = Minecraft.getMinecraft(Minecraft.class).gameSettings.showCollisionBoxes.value;
+		boolean showBox = DebugUtils.showDebugCubes.value;
 		if(showBox != lastValue){
 			lastValue = showBox;
 			this.compiled = false;
 		}
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V", shift = At.Shift.BEFORE))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/Cube;compileDisplayList(F)V", shift = At.Shift.BY, by = 2))
 	public void rotationPointRender(float scale, CallbackInfo ci){
-		if(Minecraft.getMinecraft(Minecraft.class).gameSettings.showCollisionBoxes.value){
+		if(DebugUtils.showDebugCubes.value){
 			GL11.glPushMatrix();
 			float r = GL11.glGetFloat(GL11.GL_RED_SCALE);
 			float g = GL11.glGetFloat(GL11.GL_GREEN_SCALE);
@@ -49,7 +52,7 @@ public abstract class CubeMixin {
 			float a = GL11.glGetFloat(GL11.GL_ALPHA_SCALE);
 
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glPointSize(10.0f);
+			GL11.glPointSize(DebugUtils.rotationPointSize.value + 1);
 			Tessellator tessellator = Tessellator.instance;
 
 			tessellator.startDrawing(GL11.GL_POINTS);
