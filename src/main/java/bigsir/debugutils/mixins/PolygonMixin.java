@@ -1,5 +1,6 @@
 package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.DebugUtils;
 import bigsir.debugutils.interfaces.IPolygon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.LightmapHelper;
@@ -35,15 +36,17 @@ public abstract class PolygonMixin implements IPolygon {
 
 	@Inject(method = "draw", at = @At(value = "HEAD"), cancellable = true)
 	public void drawFrame(Tessellator tessellator, float scale, CallbackInfo ci){
-		if((Boolean) Minecraft.getMinecraft(Minecraft.class).gameSettings.showCollisionBoxes.value) {
+		if(DebugUtils.showDebugCubes.value) {
 			float r = GL11.glGetFloat(GL11.GL_RED_SCALE);
 			float g = GL11.glGetFloat(GL11.GL_GREEN_SCALE);
 			float b = GL11.glGetFloat(GL11.GL_BLUE_SCALE);
 			float a = GL11.glGetFloat(GL11.GL_ALPHA_SCALE);
 
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5f);
-			GL11.glLineWidth(5.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, DebugUtils.lineOpacity.value / 100.0f);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glLineWidth(DebugUtils.lineWidth.value + 1);
 			if(LightmapHelper.isLightmapEnabled()){
 				LightmapHelper.setLightmapCoord(LightmapHelper.getLightmapCoord(15,15));
 			}
@@ -56,13 +59,15 @@ public abstract class PolygonMixin implements IPolygon {
 
 			tessellator.draw();
 			if(cubeFaceIndex == 1 && this.nVertices != 0){
-				GL11.glPointSize(10.0f);
+				GL11.glPointSize(DebugUtils.cornerPointSize.value + 1);
 				tessellator.startDrawing(GL11.GL_POINTS);
 				GL11.glColor4f(0,0,1.0f,1.0f);
 				tessellator.addVertex(vertexPositions[0].vector3D.xCoord * scale, vertexPositions[0].vector3D.yCoord * scale, vertexPositions[0].vector3D.zCoord * scale);
 				tessellator.draw();
 			}
 
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 			GL11.glColor4f(r,g,b,a);
