@@ -8,7 +8,9 @@
   "client": [
     "CubeMixin",
     "MinecraftMixin",
-    "PolygonMixin"
+    "PolygonMixin",
+    "EntityRendererMixin",
+    "GameSettingsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
