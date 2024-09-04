@@ -7,3 +7,5 @@ options.cornerPointSize=Corner Point Size
 options.rotationPointSize=Rotation Point Size
 options.debugCubeLineOpacity=Cube Line Opacity
 options.disableShadows=Disable Shadows
+options.showCubeNames=Show Cube Names
+options.namesInRow=Name Row Length
