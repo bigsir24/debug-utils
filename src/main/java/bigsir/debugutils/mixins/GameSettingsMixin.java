@@ -2,11 +2,7 @@ package bigsir.debugutils.mixins;
 
 import bigsir.debugutils.DebugUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.data.OptionsPage;
-import net.minecraft.client.option.BooleanOption;
-import net.minecraft.client.option.GameSettings;
-import net.minecraft.client.option.Option;
-import net.minecraft.client.option.RangeOption;
+import net.minecraft.client.option.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,12 +27,23 @@ public abstract class GameSettingsMixin {
 	public RangeOption lineOpacity;
 	@Unique
 	public BooleanOption disableShadows;
+	@Unique
+	public BooleanOption showCubeNames;
+	@Unique
+	public RangeOption namesInRow;
+	@Unique
+	public BooleanOption colorMode;
+
 	@Inject(method = "getDisplayString", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/core/lang/I18n;getInstance()Lnet/minecraft/core/lang/I18n;"), cancellable = true)
 	public void changeDisplayString(Option<?> option, CallbackInfoReturnable<String> cir){
 		if(option == DebugUtils.lineWidth || option == DebugUtils.cornerPointSize || option == DebugUtils.rotationPointSize){
 			cir.setReturnValue((int)option.value + 1 + "");
 		}else if(option == DebugUtils.lineOpacity){
 			cir.setReturnValue(option.value + "%");
+		}else if(option == DebugUtils.namesInRow){
+			cir.setReturnValue((int)option.value + 1 + "");
+		}else if(option == DebugUtils.colorMode){
+			cir.setReturnValue((boolean)option.value ? "Random" : "HSB");
 		}
 	}
 
@@ -50,5 +57,8 @@ public abstract class GameSettingsMixin {
 		this.rotationPointSize = DebugUtils.rotationPointSize;
 		this.lineOpacity = DebugUtils.lineOpacity;
 		this.disableShadows = DebugUtils.disableShadows;
+		this.showCubeNames = DebugUtils.showCubeNames;
+		this.namesInRow = DebugUtils.namesInRow;
+		this.colorMode = DebugUtils.colorMode;
 	}
 }
