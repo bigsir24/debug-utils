@@ -1,8 +1,9 @@
 package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.utils.ColorHelper;
 import bigsir.debugutils.DebugUtils;
+import bigsir.debugutils.interfaces.INameable;
 import bigsir.debugutils.interfaces.IPolygon;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.Polygon;
 import net.minecraft.client.render.Vertex;
@@ -16,17 +17,24 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Polygon.class, remap = false)
-public abstract class PolygonMixin implements IPolygon {
+public abstract class PolygonMixin implements IPolygon, INameable {
 	@Shadow
 	public Vertex[] vertexPositions;
 	@Shadow
 	public int nVertices;
 	@Unique
 	int cubeFaceIndex;
+	@Unique
+	private String name;
 
 	@Override
 	public void debug_utils$setCubeFaceIndex(int cubeFaceIndex) {
 		this.cubeFaceIndex = cubeFaceIndex;
+	}
+
+	@Override
+	public void debug_utils$setName(String name) {
+		this.name = name;
 	}
 
 	@Inject(method = "<init>([Lnet/minecraft/client/render/Vertex;)V", at = @At("TAIL"))
@@ -43,7 +51,11 @@ public abstract class PolygonMixin implements IPolygon {
 			float a = GL11.glGetFloat(GL11.GL_ALPHA_SCALE);
 
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, DebugUtils.lineOpacity.value / 100.0f);
+			if(!DebugUtils.showCubeNames.value) {
+				GL11.glColor4f(1.0f, 1.0f, 1.0f, DebugUtils.lineOpacity.value / 100.0f);
+			}else{
+				GL11.glColor4f(ColorHelper.getRed(this.name), ColorHelper.getGreen(this.name), ColorHelper.getBlue(this.name), DebugUtils.lineOpacity.value / 100.0f);
+			}
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glLineWidth(DebugUtils.lineWidth.value + 1);
