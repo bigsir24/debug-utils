@@ -5,7 +5,6 @@ import net.minecraft.client.input.InputDevice;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import bigsir.debugutils.DebugUtils;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
