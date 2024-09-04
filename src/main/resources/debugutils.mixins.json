@@ -7,10 +7,11 @@
   ],
   "client": [
     "CubeMixin",
+    "EntityRendererMixin",
+    "GameSettingsMixin",
     "MinecraftMixin",
     "PolygonMixin",
-    "EntityRendererMixin",
-    "GameSettingsMixin"
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
