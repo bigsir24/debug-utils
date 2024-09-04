@@ -10,6 +10,7 @@ import net.minecraft.core.util.helper.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,6 +28,7 @@ public abstract class WorldRendererMixin {
 		}
 	}
 
+	@Unique
 	private void renderNames(float partialTick){
 		for (Entity entity : mc.theWorld.getLoadedEntityList()) {
 			if(entity.distanceToSqr(mc.thePlayer) > 32*32) continue;
