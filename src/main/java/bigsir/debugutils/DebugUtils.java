@@ -1,5 +1,6 @@
 package bigsir.debugutils;
 
+import bigsir.debugutils.commands.*;
 import bigsir.debugutils.interfaces.INameable;
 import bigsir.debugutils.utils.ColorHelper;
 import net.fabricmc.api.ModInitializer;
@@ -19,6 +20,7 @@ import org.lwjgl.input.Keyboard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.util.GameStartEntrypoint;
+import turniplabs.halplibe.helper.CommandHelper;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 import java.lang.reflect.Field;
@@ -75,6 +77,10 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 		nameInit();
 		ColorHelper.initHSB();
 
+        CommandHelper.createCommand(new RenameCommand());
+        CommandHelper.createCommand(new RandTickCommand());
+        CommandHelper.createCommand(new TriggerEventCommand());
+        CommandHelper.createCommand(new NeighborChangeCommand());
 	}
 
 	@Override
