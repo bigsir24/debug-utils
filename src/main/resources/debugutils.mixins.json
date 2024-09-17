@@ -11,7 +11,8 @@
     "GameSettingsMixin",
     "MinecraftMixin",
     "PolygonMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
