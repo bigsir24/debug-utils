@@ -50,6 +50,9 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 	public static RangeOption namesInRow;
 	public static KeyBinding debugCubes;
 	public static Map<Class<? extends Entity>, List<String>> cubeNameMap = new HashMap<>();
+	public static boolean frozen = false;
+	public static boolean wasFrozen = false;
+	public static int allowedTicks = 0;
 
 	@Override
 	public void beforeGameStart() {
@@ -78,7 +81,10 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 		ColorHelper.initHSB();
 
         CommandHelper.createCommand(new RenameCommand());
+        CommandHelper.createCommand(new FreezeCommand());
+        CommandHelper.createCommand(new KillAllCommand());
         CommandHelper.createCommand(new RandTickCommand());
+        CommandHelper.createCommand(new EntityListCommand());
         CommandHelper.createCommand(new TriggerEventCommand());
         CommandHelper.createCommand(new NeighborChangeCommand());
 	}
