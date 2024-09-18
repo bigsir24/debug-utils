@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = WorldRenderer.class, remap = false)
@@ -85,5 +86,16 @@ public abstract class WorldRendererMixin {
 				GL11.glPopMatrix();
 			}
 		}
+	}
+
+	//If the game is frozen these methods will have their partialTick arguments changed to a non-frozen partialTick value
+	@ModifyVariable(method = "setupCameraTransform", at = @At(value = "LOAD"), argsOnly = true)
+	private float tickCameraTransform(float partialTick){
+		return DebugUtils.chooseTick(partialTick);
+	}
+
+	@ModifyVariable(method = "renderHand", at = @At(value = "LOAD"), argsOnly = true)
+	private float tickRenderHand(float partialTick){
+		return DebugUtils.chooseTick(partialTick);
 	}
 }
