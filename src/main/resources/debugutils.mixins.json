@@ -9,10 +9,13 @@
     "CubeMixin",
     "EntityRendererMixin",
     "GameSettingsMixin",
+    "ItemStackMixin",
     "MinecraftMixin",
     "PolygonMixin",
     "WorldRendererMixin",
-    "ItemStackMixin"
+    "EntityCameraMixin",
+    "RenderGlobalMixin",
+    "TimerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
