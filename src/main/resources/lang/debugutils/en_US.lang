@@ -9,3 +9,4 @@ options.debugCubeLineOpacity=Cube Line Opacity
 options.disableShadows=Disable Shadows
 options.showCubeNames=Show Cube Names
 options.namesInRow=Name Row Length
+options.colorMode=Color Mode
