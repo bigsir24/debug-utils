@@ -1,21 +1,29 @@
 package bigsir.debugutils.mixins;
 
 import bigsir.debugutils.DebugUtils;
+import bigsir.debugutils.interfaces.IMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputDevice;
 
+import net.minecraft.core.Timer;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Minecraft.class, remap = false)
-public abstract class MinecraftMixin {
-    @Inject(method = "checkBoundInputs", at = @At(value = "HEAD"), cancellable = true)
+public abstract class MinecraftMixin implements IMinecraft {
+
+	@Shadow
+	@Final
+	private Timer timer;
+
+	@Inject(method = "checkBoundInputs", at = @At(value = "HEAD"), cancellable = true)
     public void keyBindingCheck(InputDevice currentInputDevice, CallbackInfoReturnable<Boolean> cir){
         if(DebugUtils.debugCubes.isPressEvent(currentInputDevice)) {
             DebugUtils.showDebugCubes.toggle();
@@ -44,7 +52,12 @@ public abstract class MinecraftMixin {
         // 1st and 2nd (and maybe 3rd) are fine, the rest need to be changed
         if (ticker <= 3) return og.call(mc);
         // On the 5th, tick the player
-        if (ticker == 5) mc.thePlayer.tick();
+        if (ticker == 5 && DebugUtils.allowedTicks <= 0) mc.thePlayer.tick();
         return isGameReallyPaused(og.call(mc), ticker == 8);
     }
+
+	@Override
+	public Timer debug_utils$getTimer() {
+		return this.timer;
+	}
 }
