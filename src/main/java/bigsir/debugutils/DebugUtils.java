@@ -52,6 +52,7 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 	public static Map<Class<? extends Entity>, List<String>> cubeNameMap = new HashMap<>();
 	public static boolean frozen = false;
 	public static boolean wasFrozen = false;
+	public static float bypassTicks = 0;
 	public static int allowedTicks = 0;
 
 	@Override
@@ -97,6 +98,14 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 	@Override
 	public void initNamespaces() {
 
+	}
+
+	public static boolean isNotTicking(){
+		return DebugUtils.frozen && DebugUtils.allowedTicks <= 0;
+	}
+
+	public static float chooseTick(float partialTick){
+		return isNotTicking() ? bypassTicks : partialTick;
 	}
 
 	public static void optionsInit(GameSettings settings){
