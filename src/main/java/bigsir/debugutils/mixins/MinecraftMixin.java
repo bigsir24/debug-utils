@@ -1,5 +1,6 @@
 package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.DebugOptions;
 import bigsir.debugutils.DebugUtils;
 import bigsir.debugutils.interfaces.IMinecraft;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.core.Timer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -25,14 +27,16 @@ public abstract class MinecraftMixin implements IMinecraft {
 
 	@Inject(method = "checkBoundInputs", at = @At(value = "HEAD"), cancellable = true)
     public void keyBindingCheck(InputDevice currentInputDevice, CallbackInfoReturnable<Boolean> cir){
-        if(DebugUtils.debugCubes.isPressEvent(currentInputDevice)) {
-            DebugUtils.showDebugCubes.toggle();
+        if(DebugOptions.debugCubes.isPressEvent(currentInputDevice)) {
+            DebugOptions.showDebugCubes.toggle();
             cir.setReturnValue(true);
         }
     }
 
-    private static int ticker = 0;
-    private boolean isGameReallyPaused(boolean old, boolean last) {
+    @Unique
+	private static int ticker = 0;
+    @Unique
+	private boolean isGameReallyPaused(boolean old, boolean last) {
         boolean ret = old || (DebugUtils.frozen && DebugUtils.allowedTicks <= 0);
         if (last && DebugUtils.allowedTicks > 0) {
             DebugUtils.allowedTicks--;
@@ -45,7 +49,7 @@ public abstract class MinecraftMixin implements IMinecraft {
         ticker = 0;
     }
 
-    @WrapOperation(method = "runTick", at = @At(value = "FIELD", target = "isGamePaused"), remap = false)
+    @WrapOperation(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;isGamePaused:Z"), remap = false)
     private boolean isGamePaused_i0(Minecraft mc, Operation<Boolean> og) {
         if (!DebugUtils.frozen) return og.call(mc);
         ticker++;

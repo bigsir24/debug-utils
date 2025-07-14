@@ -1,14 +1,11 @@
 package bigsir.debugutils;
 
-import bigsir.debugutils.commands.*;
+import bigsir.debugutils.commands.CommandRename;
+import bigsir.debugutils.commands.CommandTick;
+import bigsir.debugutils.commands.CommandTriggerEvent;
 import bigsir.debugutils.interfaces.INameable;
 import bigsir.debugutils.utils.ColorHelper;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.client.gui.options.components.*;
-import net.minecraft.client.gui.options.data.OptionsPage;
-import net.minecraft.client.gui.options.data.OptionsPages;
-import net.minecraft.client.input.InputDevice;
-import net.minecraft.client.option.*;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.model.Cube;
@@ -16,11 +13,11 @@ import net.minecraft.client.render.model.ModelBase;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.item.Item;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.core.net.command.CommandManager;
+import net.minecraft.core.util.collection.NamespaceID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.util.GameStartEntrypoint;
-import turniplabs.halplibe.helper.CommandHelper;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 import java.lang.reflect.Field;
@@ -37,57 +34,28 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
     public void onInitialize() {
         LOGGER.info("Debug Utils initialized.");
     }
-
-	public static OptionsPage optionsPage;
-	public static BooleanOption showDebugCubes;
-	public static RangeOption lineWidth;
-	public static RangeOption cornerPointSize;
-	public static RangeOption rotationPointSize;
-	public static RangeOption lineOpacity;
-	public static BooleanOption disableShadows;
-	public static BooleanOption showCubeNames;
-	public static BooleanOption colorMode;
-	public static RangeOption namesInRow;
-	public static KeyBinding debugCubes;
 	public static Map<Class<? extends Entity>, List<String>> cubeNameMap = new HashMap<>();
 	public static boolean frozen = false;
 	public static boolean wasFrozen = false;
 	public static float bypassTicks = 0;
 	public static int allowedTicks = 0;
+	//public static boolean createItems = false;
+
+	public static Item TOOL_DEBUG;
 
 	@Override
 	public void beforeGameStart() {
+		//createDebugItems(20000);
 	}
 
 	@Override
 	public void afterGameStart() {
-		optionsPage = new OptionsPage(MOD_ID+".options", Item.wandMonsterSpawner.getDefaultStack());
-		OptionsPages.register(optionsPage);
-
-		optionsPage
-			.withComponent(
-				new OptionsCategory(MOD_ID + ".category.keybinds").withComponent(new KeyBindingComponent(debugCubes)))
-			.withComponent(
-				new OptionsCategory(MOD_ID + ".category.visuals")
-					.withComponent(new ToggleableOptionComponent<>(lineWidth))
-					.withComponent(new ToggleableOptionComponent<>(cornerPointSize))
-					.withComponent(new ToggleableOptionComponent<>(rotationPointSize))
-					.withComponent(new ToggleableOptionComponent<>(lineOpacity))
-					.withComponent(new BooleanOptionComponent(disableShadows))
-					.withComponent(new BooleanOptionComponent(showCubeNames))
-					.withComponent(new ToggleableOptionComponent<>(namesInRow))
-					.withComponent(new BooleanOptionComponent(colorMode)));
-
 		nameInit();
 		ColorHelper.initHSB();
 
-        CommandHelper.createCommand(new RenameCommand());
-        CommandHelper.createCommand(new FreezeCommand());
-        CommandHelper.createCommand(new KillAllCommand());
-        CommandHelper.createCommand(new RandTickCommand());
-        CommandHelper.createCommand(new EntityListCommand());
-        CommandHelper.createCommand(new TriggerEventCommand());
-        CommandHelper.createCommand(new NeighborChangeCommand());
+		CommandManager.registerCommand(new CommandTick());
+		CommandManager.registerCommand(new CommandTriggerEvent());
+		CommandManager.registerCommand(new CommandRename());
 	}
 
 	@Override
@@ -100,6 +68,18 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 
 	}
 
+	/*public static void createDebugItems(int startID) {
+		createItems = true;
+
+		ItemBuilder builder = new ItemBuilder(MOD_ID).setStackSize(1);
+
+		TOOL_DEBUG = builder.build(new ItemDebug(getID("item/tool_debug"), startID++));
+	}*/
+
+	public static NamespaceID getID(String value) {
+		return NamespaceID.getPermanent(MOD_ID, value);
+	}
+
 	public static boolean isNotTicking(){
 		return DebugUtils.frozen && DebugUtils.allowedTicks <= 0;
 	}
@@ -108,23 +88,10 @@ public class DebugUtils implements ModInitializer, GameStartEntrypoint, RecipeEn
 		return isNotTicking() ? bypassTicks : partialTick;
 	}
 
-	public static void optionsInit(GameSettings settings){
-		debugCubes = new KeyBinding(MOD_ID + ".debugcubes").setDefault(InputDevice.keyboard, Keyboard.KEY_L);
-		showDebugCubes = new BooleanOption(settings, "showDebugCubes", false);
-		lineWidth = new RangeOption(settings, "debugCubeLineWidth", 4, 10);
-		cornerPointSize = new RangeOption(settings, "cornerPointSize", 9, 20);
-		rotationPointSize = new RangeOption(settings, "rotationPointSize", 9, 20);
-		lineOpacity = new RangeOption(settings, "debugCubeLineOpacity", 50, 101);
-		disableShadows  = new BooleanOption(settings, "disableShadows", false);
-		showCubeNames = new BooleanOption(settings, "showCubeNames", false);
-		namesInRow = new RangeOption(settings, "namesInRow", 1, 8);
-		colorMode = new BooleanOption(settings, "colorMode", false);
-	}
-
 	private void nameInit(){
 		//Iterate through entity classes
 		int n = 0;
-		for (Class<? extends Entity> clazz : EntityDispatcher.classToKeyMap.keySet()){
+		for (Class<? extends Entity> clazz : EntityDispatcher.classToIdMap.keySet()){
 
 			//List for Field names to be linked to entity class
 			List<String> nameList = new ArrayList<>();

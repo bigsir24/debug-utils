@@ -1,5 +1,6 @@
 package bigsir.debugutils.mixins;
 
+import bigsir.debugutils.DebugOptions;
 import bigsir.debugutils.DebugUtils;
 import bigsir.debugutils.utils.ColorHelper;
 import net.minecraft.client.Minecraft;
@@ -22,16 +23,16 @@ public abstract class WorldRendererMixin {
 	@Shadow
 	public Minecraft mc;
 
-	@Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/debug/Debug;change(Ljava/lang/String;)V", ordinal = 9, shift = At.Shift.AFTER))
+	@Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/util/debug/Debug;change(Ljava/lang/String;)V", ordinal = 9, shift = At.Shift.AFTER))
 	public void renderModDebug(float partialTick, long updateRenderersUntil, CallbackInfo ci){
-		if(DebugUtils.showDebugCubes.value && DebugUtils.showCubeNames.value){
+		if(DebugOptions.showDebugCubes.value && DebugOptions.showCubeNames.value){
 			renderNames(partialTick);
 		}
 	}
 
 	@Unique
 	private void renderNames(float partialTick){
-		for (Entity entity : mc.theWorld.getLoadedEntityList()) {
+		for (Entity entity : mc.currentWorld.getLoadedEntityList()) {
 			if(entity.distanceToSqr(mc.thePlayer) > 32*32) continue;
 
 			ICamera cam = this.mc.activeCamera;
@@ -40,7 +41,12 @@ public abstract class WorldRendererMixin {
 				GL11.glPushMatrix();
 
 				GL11.glTranslated(-cam.getX(partialTick), -cam.getY(partialTick), -cam.getZ(partialTick));
-				GL11.glTranslated(MathHelper.floor_double(entity.x) + 0.5, entity.y + entity.bbHeight + 1, MathHelper.floor_double(entity.z) + 0.5);
+
+				double x = MathHelper.lerp(entity.xo, entity.x, partialTick);
+				double y = MathHelper.lerp(entity.yo, entity.y, partialTick);
+				double z = MathHelper.lerp(entity.zo, entity.z, partialTick);
+
+				GL11.glTranslated(x, y + entity.bbHeight + 1, z);
 
 				GL11.glRotated(180 - cam.getYRot(partialTick), 0,1,0);
 
@@ -48,38 +54,38 @@ public abstract class WorldRendererMixin {
 
 				int offset = 0;
 				int xOff = 0;
-				int space = mc.fontRenderer.getStringWidth(" ");
+				int space = mc.font.getStringWidth(" ");
 
 				int i = 0;
-				String[] strings = new String[DebugUtils.namesInRow.value + 1];
+				String[] strings = new String[DebugOptions.namesInRow.value + 1];
 				for(String string : DebugUtils.cubeNameMap.get(entity.getClass())){
 					strings[i] = string;
-					if( (i+1) / (DebugUtils.namesInRow.value+1) == 1 ){
+					if( (i+1) / (DebugOptions.namesInRow.value+1) == 1 ){
 						String temp = "";
 						for (int j = 0; j < strings.length; j++) {
 							temp += (j == 0 ? "" : " ") + strings[j];
 						}
-						int length = mc.fontRenderer.getStringWidth(temp);
+						int length = mc.font.getStringWidth(temp);
 						for (int j = 0; j < strings.length; j++) {
-							mc.fontRenderer.drawString(strings[j], -length/2 + xOff + (xOff == 0 ? 0 : space), -offset, ColorHelper.getColor(strings[j]).getRGB());
-							xOff+= mc.fontRenderer.getStringWidth(strings[j]);
+							mc.font.drawString(strings[j], -length/2 + xOff + (xOff == 0 ? 0 : space), -offset, ColorHelper.getColor(strings[j]).getRGB());
+							xOff+= mc.font.getStringWidth(strings[j]);
 							strings[j] = null;
 						}
-						offset+=mc.fontRenderer.fontHeight;
+						offset+=mc.font.fontHeight;
 						xOff = 0;
 					}
 					i++;
-					if(i % (DebugUtils.namesInRow.value + 1) == 0) i = 0;
+					if(i % (DebugOptions.namesInRow.value + 1) == 0) i = 0;
 				}
 				String temp = "";
 				for (int j = 0; j < strings.length; j++) {
 					if(strings[j] != null) temp += (j == 0 ? "" : " ") + strings[j];
 				}
-				int length = mc.fontRenderer.getStringWidth(temp);
+				int length = mc.font.getStringWidth(temp);
 				for (int j = 0; j < strings.length; j++) {
 					if(strings[j] != null) {
-						mc.fontRenderer.drawString(strings[j], -length/2 + xOff + (xOff == 0 ? 0 : space), -offset, ColorHelper.getColor(strings[j]).getRGB());
-						xOff+= mc.fontRenderer.getStringWidth(strings[j]);
+						mc.font.drawString(strings[j], -length/2 + xOff + (xOff == 0 ? 0 : space), -offset, ColorHelper.getColor(strings[j]).getRGB());
+						xOff+= mc.font.getStringWidth(strings[j]);
 					}
 				}
 
@@ -89,13 +95,8 @@ public abstract class WorldRendererMixin {
 	}
 
 	//If the game is frozen these methods will have their partialTick arguments changed to a non-frozen partialTick value
-	@ModifyVariable(method = "setupCameraTransform", at = @At(value = "LOAD"), argsOnly = true)
+	@ModifyVariable(method = {"setupCameraTransform", "renderHand"}, at = @At(value = "LOAD"), argsOnly = true)
 	private float tickCameraTransform(float partialTick){
-		return DebugUtils.chooseTick(partialTick);
-	}
-
-	@ModifyVariable(method = "renderHand", at = @At(value = "LOAD"), argsOnly = true)
-	private float tickRenderHand(float partialTick){
 		return DebugUtils.chooseTick(partialTick);
 	}
 }

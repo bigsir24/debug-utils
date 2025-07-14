@@ -1,10 +1,13 @@
 package bigsir.debugutils.utils;
 
+import bigsir.debugutils.DebugOptions;
 import bigsir.debugutils.DebugUtils;
 
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class ColorHelper {
 
@@ -13,9 +16,8 @@ public class ColorHelper {
 
 	public static Color getColor(String name){
 		if(name == null) return Color.white;
-		if(!DebugUtils.colorMode.value) return stringToHSBColorMap.get(name);
+		if(!DebugOptions.colorMode.value) return stringToHSBColorMap.get(name);
 
-		Random random = new Random();
 		Color color;
 		if(!stringToRGBColorMap.containsKey(name)) {
 			color = getRandomColor();
@@ -43,7 +45,7 @@ public class ColorHelper {
 	}
 
 	public static void refreshColors(){
-		if(!DebugUtils.colorMode.value) return;
+		if(!DebugOptions.colorMode.value) return;
 
         stringToRGBColorMap.replaceAll((k, v) -> getRandomColor());
 	}

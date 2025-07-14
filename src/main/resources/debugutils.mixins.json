@@ -7,15 +7,15 @@
   ],
   "client": [
     "CubeMixin",
+    "EntityCameraMixin",
     "EntityRendererMixin",
     "GameSettingsMixin",
     "ItemStackMixin",
     "MinecraftMixin",
     "PolygonMixin",
-    "WorldRendererMixin",
-    "EntityCameraMixin",
     "RenderGlobalMixin",
-    "TimerMixin"
+    "TimerMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

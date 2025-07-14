@@ -27,8 +27,17 @@
 		"afterGameStart": [
 			"bigsir.debugutils.DebugUtils"
 		],
+		"afterClientStart": [
+			"bigsir.debugutils.DebugClient"
+		],
+		"beforeClientStart": [
+			"bigsir.debugutils.DebugClient"
+		],
 		"recipesReady": [
 			"bigsir.debugutils.DebugUtils"
+		],
+		"initOptions": [
+			"bigsir.debugutils.DebugOptions"
 		]
 	},
   "mixins": [
@@ -36,7 +45,7 @@
   ],
 
   "depends": {
-		"minecraft": "^7.2-beta",
+		"minecraft": "^7.3-beta",
     "fabricloader": ">=0.15.5"
   },
   "suggests": {

@@ -1,6 +1,6 @@
 package bigsir.debugutils.mixins;
 
-import bigsir.debugutils.DebugUtils;
+import bigsir.debugutils.DebugOptions;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.core.entity.Entity;
@@ -14,6 +14,6 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 	@Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
 	public void disableShadows(Tessellator tessellator, T entity, double posX, double posY, double posZ, float opacity, float partialTick, CallbackInfo ci){
-		if(DebugUtils.disableShadows.value) ci.cancel();
+		if(DebugOptions.disableShadows.value) ci.cancel();
 	}
 }

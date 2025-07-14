@@ -10,3 +10,7 @@ options.disableShadows=Disable Shadows
 options.showCubeNames=Show Cube Names
 options.namesInRow=Name Row Length
 options.colorMode=Color Mode
+options.colorRotation=Color Rotation Point
+
+item.debugutils.tool.debug.name=Debug Tool
+item.debugutils.tool.debug.desc=Effective against various arthropods.
